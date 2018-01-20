@@ -6,8 +6,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-#include <map>
-#include <set>
+#include <map>  
 using namespace std;
 
 const int KEYWORDS_NUM = 14;// 保留字的个数
@@ -28,7 +27,7 @@ extern string kinds_string[3];
 enum types { INTTP, CHARTP, ARRAYTP, VOIDTP };
 extern string types_string[4];
 struct tab_item {   // tab的项
-    string name;    // 标识符名（最多IDENT_LEN个字符长度）
+    string name;    // 标识符名
     kinds kind;     // 标识符种类：常量、变量、函数
     types type;     // 标识符类型：整型、字符型、数组、无返回值函数
     int ref;        // 当标识符类型为数组时，记录其在atab中的位置；为函数时，记录其在ftab中的位置
@@ -47,7 +46,7 @@ extern vector<atab_item> atab;
 struct ftab_item {
     int lastpara;   // 函数最后一个参数在符号表中的位置
     int size;       // 参数、局部变量在运行栈中所占的存储单元总数
-    int tsize;      // 临时变量($)所占大小
+    int tsize;      // 临时变量(T)所占大小
 };
 extern vector<ftab_item> ftab;
 /* 字符串表 */
@@ -62,12 +61,10 @@ struct quadruple {
     quad_item a, b, c, d, e, f;
 };
 extern vector<quadruple> quad_code;
-extern size_t pt_r;            // 中间变量指针
+extern size_t pt_T;            // 中间变量指针
 extern size_t pt_label;
 
 extern size_t pc;
-//extern string t[] = { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9" };
-//extern int pt_t;
 
 extern size_t offset;         // 函数参数/变量的偏移地址
 
@@ -104,5 +101,9 @@ void comState(int block);   // 处理<复合语句>
 void funDefi(types tp); // 处理一个函数定义
 void fun_main();        // 处理主函数定义
 void program();    // 处理<程序>
-void optimize();    // 优化四元式
+void optimize_DAG();    // 优化四元式
+void optimize_count();	// 引用计数法优化
+bool cmp_by_value(const pair<string, int>& lhs, const pair<string, int>& rhs);	// 比较函数，用于计数排序
+void var_count(map<string, int> &local_count_map, map<string, int> &global_count_map, string name);	// 统计
 void transform();   // 四元式转MIPS
+void transform_opt();	// 优化后的生产目标代码
